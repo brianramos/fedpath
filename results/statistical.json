@@ -1,0 +1,47 @@
+{
+  "coverage": 342,
+  "results": {
+    "none": {
+      "trials": 5000.0,
+      "correct_pct": 43.16,
+      "correct_ci_low_pct": 41.792893605871136,
+      "correct_ci_high_pct": 44.537608556737254,
+      "accepted_pct": 100.0,
+      "accepted_ci_low_pct": 99.9232298054943,
+      "accepted_ci_high_pct": 100.0,
+      "step_evaluations": 10.0,
+      "contract_evaluations": 10.0,
+      "rejections": 0.0,
+      "false_rejections": 0.0,
+      "exhaustions": 0.0
+    },
+    "surprise": {
+      "trials": 5000.0,
+      "correct_pct": 70.6,
+      "correct_ci_low_pct": 69.32175792866754,
+      "correct_ci_high_pct": 71.84661275119612,
+      "accepted_pct": 99.08,
+      "accepted_ci_low_pct": 98.77511623189797,
+      "accepted_ci_high_pct": 99.30952614517523,
+      "step_evaluations": 11.7928,
+      "contract_evaluations": 11.7928,
+      "rejections": 1.8386,
+      "false_rejections": 1.2176,
+      "exhaustions": 0.0092
+    },
+    "oracle": {
+      "trials": 5000.0,
+      "correct_pct": 99.92,
+      "correct_ci_low_pct": 99.79446733541565,
+      "correct_ci_high_pct": 99.96888530238984,
+      "accepted_pct": 99.92,
+      "accepted_ci_low_pct": 99.79446733541565,
+      "accepted_ci_high_pct": 99.96888530238984,
+      "step_evaluations": 10.8716,
+      "contract_evaluations": 10.8716,
+      "rejections": 0.878,
+      "false_rejections": 0.0,
+      "exhaustions": 0.0008
+    }
+  }
+}

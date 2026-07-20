@@ -1,0 +1,30 @@
+{
+  "none": {
+    "trials": 5000.0,
+    "correct_pct": 47.62,
+    "correct_ci_low_pct": 46.23802453265814,
+    "correct_ci_high_pct": 49.00562972860034,
+    "accepted_pct": 100.0,
+    "accepted_ci_low_pct": 99.9232298054943,
+    "accepted_ci_high_pct": 100.0,
+    "step_evaluations": 12.0,
+    "contract_evaluations": 12.0,
+    "rejections": 0.0,
+    "false_rejections": 0.0,
+    "exhaustions": 0.0
+  },
+  "residue": {
+    "trials": 5000.0,
+    "correct_pct": 82.5,
+    "correct_ci_low_pct": 81.4219627002049,
+    "correct_ci_high_pct": 83.52813667336638,
+    "accepted_pct": 100.0,
+    "accepted_ci_low_pct": 99.9232298054943,
+    "accepted_ci_high_pct": 100.0,
+    "step_evaluations": 12.5766,
+    "contract_evaluations": 12.5766,
+    "rejections": 0.5766,
+    "false_rejections": 0.0,
+    "exhaustions": 0.0
+  }
+}

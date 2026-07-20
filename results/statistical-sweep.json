@@ -1,0 +1,192 @@
+{
+  "sweep": {
+    "120": {
+      "coverage": 342,
+      "results": {
+        "none": {
+          "trials": 2000.0,
+          "correct_pct": 43.45,
+          "correct_ci_low_pct": 41.2921811733187,
+          "correct_ci_high_pct": 45.632932146065706,
+          "accepted_pct": 100.0,
+          "accepted_ci_low_pct": 99.8082952718747,
+          "accepted_ci_high_pct": 99.99999999999997,
+          "step_evaluations": 10.0,
+          "contract_evaluations": 10.0,
+          "rejections": 0.0,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0
+        },
+        "surprise": {
+          "trials": 2000.0,
+          "correct_pct": 70.8,
+          "correct_ci_low_pct": 68.76894063110777,
+          "correct_ci_high_pct": 72.7513102019921,
+          "accepted_pct": 98.9,
+          "accepted_ci_low_pct": 98.34005531702527,
+          "accepted_ci_high_pct": 99.27245745886817,
+          "step_evaluations": 11.7845,
+          "contract_evaluations": 11.7845,
+          "rejections": 1.83,
+          "false_rejections": 1.213,
+          "exhaustions": 0.011
+        },
+        "oracle": {
+          "trials": 2000.0,
+          "correct_pct": 99.95,
+          "correct_ci_low_pct": 99.71731374967338,
+          "correct_ci_high_pct": 99.99117322692945,
+          "accepted_pct": 99.95,
+          "accepted_ci_low_pct": 99.71731374967338,
+          "accepted_ci_high_pct": 99.99117322692945,
+          "step_evaluations": 10.8695,
+          "contract_evaluations": 10.8695,
+          "rejections": 0.8745,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0005
+        }
+      }
+    },
+    "40": {
+      "coverage": 241,
+      "results": {
+        "none": {
+          "trials": 2000.0,
+          "correct_pct": 43.0,
+          "correct_ci_low_pct": 40.8457332455785,
+          "correct_ci_high_pct": 45.18110541635904,
+          "accepted_pct": 100.0,
+          "accepted_ci_low_pct": 99.8082952718747,
+          "accepted_ci_high_pct": 99.99999999999997,
+          "step_evaluations": 10.0,
+          "contract_evaluations": 10.0,
+          "rejections": 0.0,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0
+        },
+        "surprise": {
+          "trials": 2000.0,
+          "correct_pct": 57.75,
+          "correct_ci_low_pct": 55.572344630216385,
+          "correct_ci_high_pct": 59.897941136924196,
+          "accepted_pct": 85.8,
+          "accepted_ci_low_pct": 84.20154493218232,
+          "accepted_ci_high_pct": 87.26119448247997,
+          "step_evaluations": 13.799,
+          "contract_evaluations": 13.799,
+          "rejections": 4.603,
+          "false_rejections": 3.8725,
+          "exhaustions": 0.142
+        },
+        "oracle": {
+          "trials": 2000.0,
+          "correct_pct": 99.95,
+          "correct_ci_low_pct": 99.71731374967338,
+          "correct_ci_high_pct": 99.99117322692945,
+          "accepted_pct": 99.95,
+          "accepted_ci_low_pct": 99.71731374967338,
+          "accepted_ci_high_pct": 99.99117322692945,
+          "step_evaluations": 10.8665,
+          "contract_evaluations": 10.8665,
+          "rejections": 0.8705,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0005
+        }
+      }
+    },
+    "15": {
+      "coverage": 147,
+      "results": {
+        "none": {
+          "trials": 2000.0,
+          "correct_pct": 43.35,
+          "correct_ci_low_pct": 41.19295480268859,
+          "correct_ci_high_pct": 45.53254192615207,
+          "accepted_pct": 100.0,
+          "accepted_ci_low_pct": 99.8082952718747,
+          "accepted_ci_high_pct": 99.99999999999997,
+          "step_evaluations": 10.0,
+          "contract_evaluations": 10.0,
+          "rejections": 0.0,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0
+        },
+        "surprise": {
+          "trials": 2000.0,
+          "correct_pct": 35.65,
+          "correct_ci_low_pct": 33.580222854099134,
+          "correct_ci_high_pct": 37.774796402872816,
+          "accepted_pct": 56.15,
+          "accepted_ci_low_pct": 53.96559659885509,
+          "accepted_ci_high_pct": 58.31082371958549,
+          "step_evaluations": 14.172,
+          "contract_evaluations": 14.172,
+          "rejections": 6.8835,
+          "false_rejections": 6.091,
+          "exhaustions": 0.4385
+        },
+        "oracle": {
+          "trials": 2000.0,
+          "correct_pct": 99.95,
+          "correct_ci_low_pct": 99.71731374967338,
+          "correct_ci_high_pct": 99.99117322692945,
+          "accepted_pct": 99.95,
+          "accepted_ci_low_pct": 99.71731374967338,
+          "accepted_ci_high_pct": 99.99117322692945,
+          "step_evaluations": 10.845,
+          "contract_evaluations": 10.845,
+          "rejections": 0.85,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0005
+        }
+      }
+    },
+    "6": {
+      "coverage": 89,
+      "results": {
+        "none": {
+          "trials": 2000.0,
+          "correct_pct": 45.9,
+          "correct_ci_low_pct": 43.72601333273435,
+          "correct_ci_high_pct": 48.08970645497192,
+          "accepted_pct": 100.0,
+          "accepted_ci_low_pct": 99.8082952718747,
+          "accepted_ci_high_pct": 99.99999999999997,
+          "step_evaluations": 10.0,
+          "contract_evaluations": 10.0,
+          "rejections": 0.0,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0
+        },
+        "surprise": {
+          "trials": 2000.0,
+          "correct_pct": 0.45,
+          "correct_ci_low_pct": 0.23692806369618344,
+          "correct_ci_high_pct": 0.8530513218759819,
+          "accepted_pct": 1.55,
+          "accepted_ci_low_pct": 1.0940972933704063,
+          "accepted_ci_high_pct": 2.1916645881830026,
+          "step_evaluations": 9.042,
+          "contract_evaluations": 9.042,
+          "rejections": 6.5305,
+          "false_rejections": 5.99,
+          "exhaustions": 0.9845
+        },
+        "oracle": {
+          "trials": 2000.0,
+          "correct_pct": 100.0,
+          "correct_ci_low_pct": 99.8082952718747,
+          "correct_ci_high_pct": 99.99999999999997,
+          "accepted_pct": 100.0,
+          "accepted_ci_low_pct": 99.8082952718747,
+          "accepted_ci_high_pct": 99.99999999999997,
+          "step_evaluations": 10.822,
+          "contract_evaluations": 10.822,
+          "rejections": 0.822,
+          "false_rejections": 0.0,
+          "exhaustions": 0.0
+        }
+      }
+    }
+  }
+}

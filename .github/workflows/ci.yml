@@ -1,0 +1,51 @@
+@'
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and development tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Lint
+        run: python -m ruff check .
+
+      - name: Test
+        run: python -m pytest -vv
+
+      - name: Run exact experiment
+        run: python experiments/exact_border.py --trials 100
+
+      - name: Run statistical experiment
+        run: python experiments/statistical_border.py --trials 100
+'@ | Set-Content `
+    -Path ".github\workflows\ci.yml" `
+    -Encoding utf8

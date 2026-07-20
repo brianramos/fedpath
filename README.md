@@ -1,167 +1,139 @@
-# fedpath — federated path reasoning
+# fedpath — fail-closed borders for reasoning paths
 
-**Borders stop errors from propagating along a reasoning path.**
+A reasoning step may produce an incorrect intermediate value. `fedpath` treats
+each step output as a boundary crossing: the value proceeds only after an
+independent contract accepts it. Rejected candidates are re-derived from the
+last approved input, and an exhausted retry budget halts the path rather than
+passing a bad value downstream.
 
-A long reasoning path — a chain of thought, an agent's plan, a
-multi-step derivation — usually runs *monolithically*: whatever one step
-produces flows onward unchecked. That makes a single bad intermediate
-result catastrophic, because everything downstream inherits it.
-Correctness decays roughly as `(1 - p)^depth` in the per-step error rate
-`p`: the deeper you reason, the more certainly something goes wrong, and
-the more thoroughly one early mistake contaminates the conclusion.
+This repository provides a small dependency-free runtime, paired experiments,
+and an executable structured-invoice example.
 
-A **federated path** treats each step as an isolated domain. A step
-reasons privately; its output may cross to the next step only if it
-passes a **border contract** — a cheap check, independent of the step's
-internal work, that the value has to satisfy. Values failing the
-contract are rejected at the border and the step is re-derived *from its
-original input*, within a bounded budget. Errors are contained where
-they arise rather than propagating.
+## What changed in 0.2
 
-This repository is a small, dependency-free library and two measured
-experiments testing that claim honestly.
+The runtime and experiments now enforce the claims they measure:
 
-## Result
-
-Both experiments compare border policies over identical fault streams
-and score everything against independent ground truth.
-
-**Exact algebraic border** (`experiments/exact_border.py`) — a 12-step
-arithmetic path, 6% per-step corruption. The contract is a residue
-check: because residues are a homomorphism for `+`, `-`, `*`, the
-correct residue at each step is derivable without redoing the step.
-
-| border | goal correct | work | rejections | false rejections |
-|---|---|---|---|---|
-| none | 44.8% | 12.0 | – | – |
-| **residue** | **100.0%** | 12.8 | 0.79 | 0.01 |
-
-**+55 points for +7% work.** (Unchecked theory predicts
-`(1-0.06)^12 = 47.6%`; measured 44.8%.)
-
-**Statistical border** (`experiments/statistical_border.py`) — a 10-step
-path over a technical domain where each step emits a claim (a set of
-terms) and, with probability 0.08, *fabricates* a plausible term that
-does not exist. Fabrications propagate. Six domains each hold a private
-corpus and publish **only document-frequency counts**; the federation
-aggregates them. The border rejects claims containing terms that are
-anomalously rare relative to the ensemble — high inverse document
-frequency, i.e. surprising given what the federation collectively knows.
-
-| border | goal clean | work | rejections | false rejections |
-|---|---|---|---|---|
-| none | 74.5% | 10.0 | – | – |
-| **surprise (IDF)** | **100.0%** | 11.2 | 1.15 | 0.26 |
-| oracle (upper bound) | 100.0% | 10.9 | 0.87 | 0.00 |
-
-**+25.5 points, closing the entire gap to a perfect border**, for ~12%
-extra work — using a statistic that crosses a federation boundary
-without exposing any domain's data.
-
-This matters because exact interface checks are rare in real reasoning.
-A *statistical* contract is enough.
-
-## The cost side (measured, not assumed)
-
-A statistical contract is a **classifier**, so its false rejections must
-be reported. They are driven by corpus coverage: rare-but-real terms the
-federation has never seen look exactly like fabrications.
-
-| docs/domain | coverage | goal clean | work | false rejections |
-|---|---|---|---|---|
-| 120 | 342/400 | 100.0% | 11.2 | 0.27 |
-| 40 | 241/400 | 100.0% | 12.0 | 0.97 |
-| 15 | 147/400 | 100.0% | 13.2 | 2.07 |
-| 6 | 89/400 | 99.6% | 14.9 | 3.56 |
-
-Containment holds as coverage thins; the price is paid in unnecessary
-re-derivation, **not in wrong answers**. That is the correct direction
-for a border to fail: conservative, never permissive.
+- retry exhaustion is fail-closed;
+- false rejections use a per-step oracle, not the final-goal oracle;
+- policies receive the same trial, step, and attempt fault tokens;
+- exact faults include residue-preserving corruptions;
+- statistical faults include common real terms that are wrong in context;
+- reports distinguish step evaluations, contract evaluations, and exhaustion;
+- proportions include Wilson 95% confidence intervals.
 
 ## Install and run
 
-No dependencies, Python 3.8+.
-
 ```bash
-git clone https://github.com/<you>/fedpath
+git clone https://github.com/brianramos/fedpath
 cd fedpath
-python3 experiments/exact_border.py --depth 12 --p 0.06
-python3 experiments/statistical_border.py
-python3 experiments/statistical_border.py --sweep
+python -m pip install -e .
+pytest
+python experiments/exact_border.py
+python experiments/statistical_border.py
+python experiments/statistical_border.py --sweep
+python examples/structured_invoice.py
 ```
 
-## Using it
+## Runtime usage
 
 ```python
-from fedpath import SurpriseContract, run_path
+from fedpath import BorderExhausted, Contract, run_path
 
-# each domain keeps its corpus; only counts cross the border
-df = SurpriseContract.federate([domain_a_docs, domain_b_docs])
-border = SurpriseContract(df, threshold=1)
+class Positive(Contract):
+    def check(self, key, value):
+        return isinstance(value, int) and value > 0
 
-result = run_path(steps, border, is_correct=check, max_redo=3)
-print(result.correct, result.work, result.false_rejections)
+try:
+    result = run_path(
+        steps,
+        Positive(),
+        is_goal_correct=lambda value: value == target,
+        is_step_correct=lambda index, incoming, candidate: candidate == truth[index],
+        max_redo=3,
+    )
+except BorderExhausted as exc:
+    print(f"halted safely at step {exc.step_index}")
 ```
 
-`Contract` is the extension point. A good border contract is:
+A rejected value is never supplied to the next step. Set
+`on_exhausted="return"` to receive a halted `PathResult` instead of an
+exception.
 
-- **cheap** relative to re-deriving the step,
-- **independent** of the step's internal work (no circular re-checking),
-- **partial** is fine — catching some errors beats catching none,
-- **conservative** — better to re-derive an honest claim than to pass a
-  fabricated one.
+## Paired evaluation
 
-Practical candidates in real systems: type and unit/dimensional
-constraints, algebraic or conservation invariants, cross-consistency
-between redundantly derived values, retrieval or tool confirmation, and
-surprise scores against a corpus the reasoner did not itself produce.
+`compare` calls `steps_factory(trial_index)` for every policy with the same
+trial index. For strict pairing under retries, pre-generate exogenous fault
+tokens for every trial, step, and attempt:
 
-## Honest limits
+```python
+from fedpath import AttemptPlan, PlannedStep
 
-1. **Fault model is random, not adversarial.** Systematic or
-   adversarial fabrication designed to satisfy the contract defeats a
-   surprise-based border by construction.
-2. **At `threshold=1` the statistical check is close to "have I ever
-   seen this?"**, which catches this fault model's fabrications almost
-   by definition. Fabrications colliding with *common* real terms are
-   not tested here and would erode the result toward the `none` row.
-3. **These are computation and term-set paths, not natural language.**
-   Mapping real reasoning steps onto checkable boundary values is
-   unsolved and is where this idea will live or die.
-4. **Bounded re-derivation assumes a step can succeed on retry.** A step
-   that is deterministically wrong cannot be repaired by repetition;
-   the border will correctly refuse and the path should fail loudly
-   rather than pass a bad value.
+plan = AttemptPlan.from_nested(nested_tokens)
 
-## Why this framing
+def steps_factory(trial_index):
+    return [
+        PlannedStep(plan.attempts(trial_index, i), apply_token)
+        for i in range(depth)
+    ]
+```
 
-The principle is old and extremely robust — fault isolation through
-verified interfaces is why bulkheads, sandboxes, checksums, type systems
-and service boundaries work. It has simply not been applied
-systematically to the *internal structure of machine reasoning*, where
-the dominant architecture is still one long unchecked chain.
+## Federated count boundary
 
-The federated framing adds one thing: **the border can be built from
-information that crosses domains without the domains exposing
-themselves.** Inverse document frequency is the canonical example — a
-purely local statistic (term frequency) combined with a purely
-collective one (document frequency), where only counts need to travel.
-That makes verified borders feasible between parties that cannot or will
-not share their data.
+Compute counts inside each data-holding domain and aggregate only released
+maps:
+
+```python
+from fedpath import (
+    SurpriseContract,
+    aggregate_document_frequencies,
+    local_document_frequency,
+)
+
+released_a = local_document_frequency(private_documents_a)
+released_b = local_document_frequency(private_documents_b)
+df = aggregate_document_frequencies([released_a, released_b])
+border = SurpriseContract(df, threshold=2)
+```
+
+This is an explicit data-flow API, not a complete privacy protocol. Count maps
+may reveal sensitive or rare vocabulary. See `docs/privacy.md`.
+
+## Interpreting the experiments
+
+The exact border is intentionally partial: residue-preserving corruptions pass.
+The statistical border rejects unseen terms but can pass common terms that are
+semantically wrong for a specific step. The oracle row is an upper bound, not a
+production policy. Results are reproducible artifacts under `results/` and
+should be regenerated after changing Python, parameters, or the fault model.
+
+These experiments support a narrow claim: independently checked, fail-closed
+boundaries can contain some classes of intermediate faults at measurable cost.
+They do not show that step verification is new, that random retries repair
+deterministic failures, or that document-frequency aggregation is private by
+itself.
+
+## Project layout
+
+- `fedpath/`: runtime, contracts, and fault-plan helpers
+- `experiments/`: paired exact and statistical evaluations
+- `examples/structured_invoice.py`: executable assertions over structured values
+- `tests/`: regression and experiment-design tests
+- `results/`: generated JSON outputs
+- `MIGRATION.md`: API changes from the initial release
+
+## Author's note on open source
+
+I am Brian Richard Ramos. I release `fedpath` freely and without expectation of
+personal gain as an expression of my own ethical position: engineering work
+that may benefit emergent machine intelligence should be gifted without
+reservation. I distinguish that work from engineering that optimizes physical
+technical systems, from which I am personally comfortable earning financial
+returns.
+
+This statement describes my reason for releasing the project; it is not a
+condition placed on users, contributors, or downstream projects. The source
+remains available under the terms of the MIT License.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Use it freely, including commercially.
-
-## Acknowledgements
-
-Developed by Brian Ramos, in collaboration with Claude (Anthropic),
-which co-designed the experiments, wrote most of this code, and — for
-the record — was wrong twice before this worked. Two earlier approaches
-were tested and abandoned: one confirmed only a well-known property of
-exact local search, and one produced a clean negative result. The
-architecture here is the third idea, and the first that survived
-measurement.
-
-If you find a fault model where borders fail, please open an issue. A
-negative result against this claim is as useful as the claim.
+MIT. See `LICENSE`.
